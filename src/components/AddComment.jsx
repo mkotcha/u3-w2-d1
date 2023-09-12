@@ -4,11 +4,11 @@ import { Alert, Button, Form, Modal } from "react-bootstrap";
 class AddComment extends Component {
   state = {
     hasAlert: false,
-    alert: { message: "", status: "", variant: "success" },
+    alert: { message: "", status: "", variant: "" },
     modalShow: false,
     comment: {
       comment: "",
-      elementId: this.props.id,
+      elementId: "",
       rate: 1,
     },
   };
@@ -16,6 +16,7 @@ class AddComment extends Component {
   handleClose = () => {
     this.setState({ modalShow: false });
   };
+
   handleShow = () => {
     this.setState({ modalShow: true });
   };
@@ -25,10 +26,11 @@ class AddComment extends Component {
   };
 
   handleSubmit = async event => {
-    console.log(JSON.stringify(this.state.comment));
     event.preventDefault();
     const url = "https://striveschool-api.herokuapp.com/api/comments/";
-    const options = {
+    let options = {};
+
+    options = {
       method: "POST",
       body: JSON.stringify(this.state.comment),
       headers: {
@@ -37,26 +39,26 @@ class AddComment extends Component {
           "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NGU4NTIyMGMwMzRmZjAwMTQwM2Y0Y2QiLCJpYXQiOjE2OTQwODk3MTgsImV4cCI6MTY5NTI5OTMxOH0.yy5_J1EHIdfBE0x6pZgPJ2RrplUDZE2vU6TvoY2MdDM",
       },
     };
+
     try {
       const response = await fetch(url, options);
-      console.log(response);
       if (response.ok) {
         this.setState({
           comment: {
             comment: "",
-            elementId: this.props.id,
+            elementId: this.props.selected,
             rate: 1,
           },
         });
 
-        this.props.comArea.update();
-
-        const newReserv = await response.json();
+        const newComment = await response.json();
+        // this.props.mod(newComment._id);
+        this.props.update();
 
         this.setState({
           hasAlert: true,
           alert: {
-            message: "comment - " + newReserv.comment + " - added!",
+            message: "comment - " + newComment.comment + " - added!",
             status: response.status,
             variant: "success",
           },
@@ -74,6 +76,16 @@ class AddComment extends Component {
     }
 
     setTimeout(() => this.handleClose(), 2000);
+  };
+
+  componentDidUpdate = pervProps => {
+    if (pervProps.selected !== this.props.selected) {
+      this.setState({ comment: { ...this.state.comment, elementId: this.props.selected } });
+    }
+  };
+
+  componentDidMount = () => {
+    this.setState({ comment: { ...this.state.comment, elementId: this.props.selected } });
   };
 
   render() {
@@ -95,16 +107,21 @@ class AddComment extends Component {
             )}
             <Form id="addComment">
               <Form.Group>
+                <Form.Label>Rating</Form.Label>
+                <Form.Range
+                  min="1"
+                  max="5"
+                  step="1"
+                  value={this.state.comment.rate}
+                  onChange={event => this.handleChange("rate", event.target.value)}
+                />
                 <Form.Label>Comment</Form.Label>
                 <Form.Control
                   type="text"
                   as="textarea"
                   placeholder="your comment..."
                   value={this.state.comment.comment}
-                  onChange={event =>
-                    // this.setState({ reservation: { ...this.state.reservation, name: event.target.value } })
-                    this.handleChange("comment", event.target.value)
-                  }
+                  onChange={event => this.handleChange("comment", event.target.value)}
                   required
                 />
               </Form.Group>

@@ -1,5 +1,9 @@
 import { Container, Dropdown } from "react-bootstrap";
 
+const setCategory = (event, fetch, category) => {
+  fetch(category);
+};
+
 const Jumbo = props => {
   return (
     <Container>
@@ -17,22 +21,22 @@ const Jumbo = props => {
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-              <Dropdown.Item href="#/action-1" onClick={() => props.classIstance.setState({ category: "fantasy" })}>
+              <Dropdown.Item href="#/action-1" onClick={event => setCategory(event, props.fakeFetch, "fantasy")}>
                 fantasy
               </Dropdown.Item>
-              <Dropdown.Item href="#/action-2" onClick={() => props.classIstance.setState({ category: "history" })}>
+              <Dropdown.Item href="#/action-2" onClick={event => setCategory(event, props.fakeFetch, "history")}>
                 history
               </Dropdown.Item>
-              <Dropdown.Item href="#/action-3" onClick={() => props.classIstance.setState({ category: "horror" })}>
+              <Dropdown.Item href="#/action-3" onClick={event => setCategory(event, props.fakeFetch, "horror")}>
                 horror
               </Dropdown.Item>
-              <Dropdown.Item href="#/action-3" onClick={() => props.classIstance.setState({ category: "romance" })}>
+              <Dropdown.Item href="#/action-3" onClick={event => setCategory(event, props.fakeFetch, "romance")}>
                 romance
               </Dropdown.Item>
-              <Dropdown.Item href="#/action-3" onClick={() => props.classIstance.setState({ category: "scifi" })}>
+              <Dropdown.Item href="#/action-3" onClick={event => setCategory(event, props.fakeFetch, "scifi")}>
                 scifi
               </Dropdown.Item>
-              <Dropdown.Item href="#/action-3" onClick={() => props.classIstance.setState({ category: "all" })}>
+              <Dropdown.Item href="#/action-3" onClick={event => setCategory(event, props.fakeFetch, "all")}>
                 all
               </Dropdown.Item>
             </Dropdown.Menu>

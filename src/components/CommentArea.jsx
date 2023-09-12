@@ -6,13 +6,10 @@ class CommentArea extends Component {
   state = {
     isLoading: true,
     hasError: false,
-    bookID: "",
     comments: [],
-    updated: 0,
   };
 
   update = () => {
-    // this.setState({ updated: this.state.updated++ });
     this.fetchComments();
   };
 
@@ -26,37 +23,36 @@ class CommentArea extends Component {
     };
 
     this.setState({ isLoading: true });
-    console.log("FETCH comments");
     try {
-      const response = await fetch(url + this.props.id, options);
-
+      const response = await fetch(url, options);
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json().then(resp => resp.filter(elm => elm.elementId === this.props.selected));
         this.setState({ comments: data });
-        // ogni volta che cambia lo stato, render() viene invocato di nuovo
-        console.log("setState");
       } else {
-        console.log("setState");
         this.setState({ hasError: true });
       }
     } catch (error) {
       console.log(error);
     } finally {
-      // il metodo finally verrà eseguito SEMPRE e IN OGNI CASO, torna utile per qualcosa che debba avvenire sempre e comunque (sia in condizioni positive che negative)
       this.setState({ isLoading: false });
     }
   };
 
   componentDidMount = () => {
-    console.log("COMPONENT DID MOUNT");
     this.fetchComments();
   };
+
+  componentDidUpdate = (prevProps, prevState) => {
+    if (prevProps.selected !== this.props.selected) this.fetchComments();
+  };
+
   render() {
     return (
       <>
-        <div className="pt-3">
+        <div>
+          {this.state.comments.length === 0 && <h5>There are no comments yet...</h5>}
           {this.state.isLoading && <Spinner animation="border" variant="warning" />}
-          <CommentList comments={this.state.comments} id={this.props.id} comArea={this} />
+          <CommentList comments={this.state.comments} selected={this.props.selected} update={this.update} />
         </div>
         <div className="flex-grow-1"></div>
       </>
